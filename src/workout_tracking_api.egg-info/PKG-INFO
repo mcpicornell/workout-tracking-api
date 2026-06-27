@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: workout-tracking-api
+Version: 0.1.0
+Summary: API para seguimiento de ejercicios
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: sqlalchemy
+Requires-Dist: aiosqlite
+Requires-Dist: sqladmin
+Requires-Dist: python-dotenv
+Requires-Dist: pydantic-settings
+Requires-Dist: fastapi-fastauth[sqlalchemy]
+Requires-Dist: itsdangerous>=2.2.0
+Requires-Dist: werkzeug>=3.1.8
+Requires-Dist: pytest>=9.1.1
+Requires-Dist: pytest-asyncio>=1.4.0
+Requires-Dist: pytest-cov>=7.1.0

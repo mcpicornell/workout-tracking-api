@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["ARCHITECTURE.md"],
+  "rules": [
+    "Follow the rules defined in ARCHITECTURE.md strictly.",
+    "Do not add comments to the code.",
+    "Maintain strict layer separation (Infra, Adapters, Domain).",
+    "Use dependency injection for all class instances.",
+    "Use dataclasses for all DTOs."
+  ]
+}

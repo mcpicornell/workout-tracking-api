@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+aiosqlite
+sqladmin
+python-dotenv
+pydantic-settings
+fastapi-fastauth[sqlalchemy]
+itsdangerous>=2.2.0
+werkzeug>=3.1.8
+pytest>=9.1.1
+pytest-asyncio>=1.4.0
+pytest-cov>=7.1.0
