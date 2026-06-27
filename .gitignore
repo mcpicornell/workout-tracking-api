@@ -13,3 +13,4 @@ venv/
 *.db
 workout.db
 workout.db-journal
+src/workout_tracking_api.egg-info/
