@@ -1,13 +1,15 @@
 from dataclasses import dataclass
-from typing import Optional
-from uuid import UUID
 from datetime import datetime
+from typing import List, Optional
+from uuid import UUID
+
 
 @dataclass(frozen=True, slots=True)
 class CreateExerciseInput:
     name: str
     job_id: UUID
     description: Optional[str] = None
+
 
 @dataclass(frozen=True, slots=True)
 class UpdateExerciseInput:
@@ -16,17 +18,21 @@ class UpdateExerciseInput:
     description: Optional[str] = None
     job_id: Optional[UUID] = None
 
+
 @dataclass(frozen=True, slots=True)
 class GetExerciseByIdInput:
     id: UUID
+
 
 @dataclass(frozen=True, slots=True)
 class GetExerciseByJobIdInput:
     job_id: UUID
 
+
 @dataclass(frozen=True, slots=True)
 class DeleteExerciseInput:
     id: UUID
+
 
 @dataclass(frozen=True, slots=True)
 class ExerciseDB:
@@ -37,5 +43,7 @@ class ExerciseDB:
     updated_at: datetime
     job_id: UUID
 
+
 ExerciseCreateOutput = ExerciseDB
 ExerciseUpdateOutput = Optional[ExerciseDB]
+GetAllExercisesOutput = List[ExerciseDB]
