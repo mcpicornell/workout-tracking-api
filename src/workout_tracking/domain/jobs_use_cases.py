@@ -37,5 +37,5 @@ class DefaultJobsUseCases(JobsUseCases):
 
     async def update_job(self, input: UpdateJobPortInput) -> None:
         await self._job_storage_port.update_job(
-            UpdateJobPortInput(job_id=input.job_id, status=input.status)
+            UpdateJobPortInput(id=input.id, status=input.status, result=input.result)
         )

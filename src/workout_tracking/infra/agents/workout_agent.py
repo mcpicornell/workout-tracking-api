@@ -1,3 +1,4 @@
+from typing import Protocol
 from langchain_core.messages import HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
@@ -11,13 +12,27 @@ from workout_tracking.infra.agents.workout_agent_types import (
     ProcessWorkoutMessageOutput,
     WorkoutState,
 )
-from workout_tracking.infra.repositories.exercise_repository import ExerciseRepository
+from workout_tracking.infra.repositories.exercise_repository import (
+    ExerciseRepository,
+)
 from workout_tracking.infra.repositories.user_exercise_repository import (
     UserExerciseRepository,
 )
 
+class WorkoutAgent(Protocol):
+    async def process_workout_message(
+        self, input: ProcessWorkoutMessageInput
+    ) -> ProcessWorkoutMessageOutput:
+        ...
 
-class WorkoutAgent:
+    async def confirm_workout(
+        self, confirmed: bool, job_id: UUID, user_id: UUID
+    ) -> str:
+        ...
+
+
+
+class DefaultWorkoutAgent(WorkoutAgent):
     def __init__(
         self,
         exercise_repository: ExerciseRepository,
@@ -55,20 +70,24 @@ class WorkoutAgent:
         }
 
         result = await self._graph.ainvoke(initial_state, config=config)
-        return ProcessWorkoutMessageOutput(content=result["messages"][-1].content)
+        return ProcessWorkoutMessageOutput(
+            content=result["messages"][-1].content
+        )
 
-    async def confirm_workout(self, confirmed: bool, job_id: UUID, user_id: UUID) -> str:
+    async def confirm_workout(
+        self, confirmed: bool, job_id: UUID, user_id: UUID
+    ) -> str:
         config = {
             "configurable": {
                 "thread_id": job_id,
                 "actor_id": user_id,
             }
         }
-        message = f"Please {'confirm' if confirmed else 'reject'} the workout data."
+        message = (
+            f"Please {'confirm' if confirmed else 'reject'} the workout data."
+        )
         initial_state: WorkoutState = {
             "messages": [HumanMessage(content=message)],
-            "prepared_workout": None,
-            "confirmation_status": None,
         }
 
         result = await self._graph.ainvoke(initial_state, config=config)

@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Protocol
 
 from .jobs_use_cases_types import JobStatus, JobStoragePort, UpdateJobInput
@@ -17,10 +18,10 @@ class WorkoutMessagesUseCases(Protocol):
 class DefaultWorkoutMessagesUseCases(WorkoutMessagesUseCases):
     def __init__(
         self,
-        message_processor_port: WorkoutMessageProcessorPort,
+        workout_message_processor_port: WorkoutMessageProcessorPort,
         job_storage_port: JobStoragePort,
     ):
-        self._message_processor_port = message_processor_port
+        self._workout_message_processor_port = workout_message_processor_port
         self._job_storage_port = job_storage_port
 
     async def process_workout_message(
@@ -28,15 +29,22 @@ class DefaultWorkoutMessagesUseCases(WorkoutMessagesUseCases):
         input: ProcessWorkoutMessageInput,
     ) -> None:
         try:
-            port_output = await self._message_processor_port.process_workout_message(
-                ProcessWorkoutMessagePortInput(message=input.message)
+            process_workout_message_output = (
+                await self._workout_message_processor_port.process_workout_message(
+                    ProcessWorkoutMessagePortInput(
+                        message=input.message,
+                        user_id=input.user_id,
+                        job_id=input.job_id,
+                        workout_date=date.today(),
+                    )
+                )
             )
 
             await self._job_storage_port.update_job(
                 UpdateJobInput(
                     id=input.job_id,
                     status=JobStatus.COMPLETED,
-                    result=port_output.result,
+                    result=process_workout_message_output.result,
                 )
             )
         except Exception as e:
