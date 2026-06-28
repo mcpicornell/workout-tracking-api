@@ -18,7 +18,7 @@
 ## Code Structure & Conventions
 1. **Types**: Every file requiring complex types must have a sibling `*_types.py` file.
 2. **Data Structures**: All `dataclasses` MUST be defined with the following decorator: `@dataclass(frozen=True, slots=True)`.
-    - Repositories must receive `dataclass` input and return `dataclass` output (e.g., `CreateUserInput`, `CreateUserOutput`).
+   - Repositories must receive `dataclass` input and return `dataclass` output (e.g., `CreateUserInput`, `CreateUserOutput`).
 3. **Function Signatures**:
    - All public functions in the `Domain`, `Adapters`, and `Infra` layers MUST have exactly one argument.
    - This argument must be a `dataclass` named `[FunctionName]Input` (e.g., `update_user` uses `UpdateUserInput`).
@@ -60,3 +60,7 @@
 - All code, documentation, and communication must be in English.
 - No code comments are allowed.
 
+## Agent Behavior
+1. NEVER delete files without asking.
+2. NEVER change classes without asking.
+3. NEVER make a change without being completely sure.

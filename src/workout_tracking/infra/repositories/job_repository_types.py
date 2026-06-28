@@ -1,45 +1,44 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from datetime import datetime
+
 from ..db.models import JobStatus
+
 
 @dataclass(frozen=True, slots=True)
 class CreateJobInput:
-    name: str
-    job_id: UUID
-    description: Optional[str] = None
+    description: str
     status: JobStatus = JobStatus.PENDING
+
 
 @dataclass(frozen=True, slots=True)
 class UpdateJobInput:
     id: UUID
-    name: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[JobStatus] = None
-    job_id: Optional[UUID] = None
+    status: JobStatus
+    result: str
+
 
 @dataclass(frozen=True, slots=True)
 class GetJobByIdInput:
     id: UUID
 
-@dataclass(frozen=True, slots=True)
-class GetJobByJobIdInput:
-    id: UUID
 
 @dataclass(frozen=True, slots=True)
 class DeleteJobInput:
     id: UUID
 
+
 @dataclass(frozen=True, slots=True)
 class JobDB:
     id: UUID
-    name: str
     description: Optional[str]
     status: JobStatus
+    result: Optional[str]
     created_at: datetime
     updated_at: datetime
-    job_id: UUID
 
-JobCreateOutput = JobDB
-JobUpdateOutput = Optional[JobDB]
+
+CreateJobOutput = JobDB
+UpdateJobOutput = Optional[JobDB]
+GetJobByIdOutput = Optional[JobDB]

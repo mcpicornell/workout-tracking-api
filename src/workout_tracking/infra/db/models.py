@@ -1,21 +1,29 @@
 import uuid
 from datetime import datetime, timezone
 from enum import StrEnum
-from sqlalchemy import Column, String, DateTime, Date, Integer, ForeignKey, Boolean, Enum as SQLEnum
-from sqlalchemy.types import TypeDecorator
+
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import relationship
+from sqlalchemy.types import TypeDecorator
+
 from .database import Base
+
 
 def get_now_utc():
     return datetime.now(timezone.utc)
 
+
 class GUID(TypeDecorator):
     impl = String
     cache_ok = True
+
     def process_bind_param(self, value, _):
         return str(value) if value else None
+
     def process_result_value(self, value, _):
         return uuid.UUID(value) if value else None
+
 
 class JobStatus(StrEnum):
     PENDING = "PENDING"
@@ -33,10 +41,10 @@ class JobModel(Base):
         SQLEnum(JobStatus),
         default=JobStatus.PENDING,
         nullable=False,
-    )    
+    )
+    result = Column(String, nullable=True)
     created_at = Column(DateTime, default=get_now_utc)
     updated_at = Column(DateTime, default=get_now_utc, onupdate=get_now_utc)
-    job_id = Column(GUID, ForeignKey("jobs.id"), nullable=False)
 
 
 class UserModel(Base):
@@ -53,6 +61,7 @@ class UserModel(Base):
 
     user_exercises = relationship("UserExerciseModel", back_populates="user")
 
+
 class ExerciseModel(Base):
     __tablename__ = "exercises"
 
@@ -64,6 +73,7 @@ class ExerciseModel(Base):
     job_id = Column(GUID, ForeignKey("jobs.id"), nullable=False)
 
     user_exercises = relationship("UserExerciseModel", back_populates="exercise")
+
 
 class UserExerciseModel(Base):
     __tablename__ = "user_exercises"
