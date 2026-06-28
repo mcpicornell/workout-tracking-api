@@ -55,8 +55,8 @@ def test_map_infra_job_output_to_domain_with_none_result():
     )
 
     domain_job = map_infra_job_output_to_domain(infra_output)
-
-    assert domain_job.result == ""
+    
+    assert domain_job.result is None
 
 
 def test_map_domain_job_to_infra_create_input():

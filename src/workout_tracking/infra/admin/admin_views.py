@@ -1,16 +1,17 @@
-from functools import lru_cache
-
 from sqladmin import ModelView
 
-from .auth import AdminAuth
-from .infra.db.models import ExerciseModel, JobModel, UserExerciseModel, UserModel
-from .settings import get_settings
+from workout_tracking.infra.db.models import (
+    ExerciseModel,
+    JobModel,
+    UserExerciseModel,
+    UserModel,
+)
 
 
 class JobAdmin(ModelView, model=JobModel):
     name = "Job"
     plural = "Jobs"
-    column_list = [JobModel.id, JobModel.name, JobModel.status]
+    column_list = [JobModel.id, JobModel.description, JobModel.status]
 
 
 class UserAdmin(ModelView, model=UserModel):
@@ -37,8 +38,3 @@ ADMIN_VIEWS = (
     ExerciseAdmin,
     UserExerciseAdmin,
 )
-
-
-@lru_cache
-def get_authentication_backend():
-    return AdminAuth(secret_key=get_settings().SECRET_AUTH_KEY)

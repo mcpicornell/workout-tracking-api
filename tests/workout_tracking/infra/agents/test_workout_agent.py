@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 from datetime import date
 
 from langgraph.checkpoint.memory import MemorySaver
-from workout_tracking.infra.agents.workout_agent import WorkoutAgent
+from workout_tracking.infra.agents.workout_agent import DefaultWorkoutAgent as WorkoutAgent
 from workout_tracking.infra.agents.workout_agent_types import (
     LLMSettings,
     ProcessWorkoutMessageInput,

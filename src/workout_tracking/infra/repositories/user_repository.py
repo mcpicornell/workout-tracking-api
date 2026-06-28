@@ -35,14 +35,14 @@ class DefaultUserRepository:
                 return None
             return self._map_to_user_db(user)
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserRepository while getting user by id") from e
+            raise GenericInfraException(f"Error while getting user by id: {e}") from e
 
     async def get_user_by_email(self, input: GetUserByEmailInput) -> Optional[UserModel]:
         try:
             result = await self.session.execute(select(UserModel).where(UserModel.email == input.email))
             return result.scalar_one_or_none()
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserRepository while getting user by email") from e
+            raise GenericInfraException(f"Error while getting user by email: {e}") from e
 
     async def create_user(self, input: CreateUserInput) -> UserCreateOutput:
         try:
@@ -53,7 +53,7 @@ class DefaultUserRepository:
             await self.session.refresh(user)
             return self._map_to_user_db(user)
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserRepository while creating user") from e
+            raise GenericInfraException(f"Error while creating user: {e}") from e
 
     async def update_user(self, input: UpdateUserInput) -> UserUpdateOutput:
         try:
@@ -74,7 +74,7 @@ class DefaultUserRepository:
             await self.session.refresh(user)
             return self._map_to_user_db(user)
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserRepository while updating user") from e
+            raise GenericInfraException(f"Error while updating user: {e}") from e
 
     async def delete_user(self, input: DeleteUserInput) -> bool:
         try:
@@ -87,7 +87,7 @@ class DefaultUserRepository:
                     return True
             return False
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserRepository while deleting user") from e
+            raise GenericInfraException(f"Error while deleting user: {e}") from e
 
     async def get_users_by_job_id(self, input: GetUserByJobIdInput) -> List[UserDB]:
         try:
@@ -95,7 +95,7 @@ class DefaultUserRepository:
             users = result.scalars().all()
             return [self._map_to_user_db(user) for user in users]
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserRepository while getting users by job id") from e
+            raise GenericInfraException(f"Error while getting users by job id: {e}") from e
 
     def _map_to_user_db(self, user: UserModel) -> UserDB:
         return UserDB(

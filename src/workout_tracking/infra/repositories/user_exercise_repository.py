@@ -33,7 +33,7 @@ class DefaultUserExerciseRepository:
                 return None
             return self._map_to_user_exercise_db(item)
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserExerciseRepository while getting user exercise by id") from e
+            raise GenericInfraException(f"Error while getting user exercise by id: {e}") from e
 
     async def create_user_exercise(self, input: CreateUserExerciseInput) -> UserExerciseCreateOutput:
         try:
@@ -44,7 +44,7 @@ class DefaultUserExerciseRepository:
             await self.session.refresh(item)
             return self._map_to_user_exercise_db(item)
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserExerciseRepository while creating user exercise") from e
+            raise GenericInfraException(f"Error while creating user exercise: {e}") from e
 
     async def update_user_exercise(self, input: UpdateUserExerciseInput) -> UserExerciseUpdateOutput:
         try:
@@ -65,7 +65,7 @@ class DefaultUserExerciseRepository:
             await self.session.refresh(item)
             return self._map_to_user_exercise_db(item)
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserExerciseRepository while updating user exercise") from e
+            raise GenericInfraException(f"Error while updating user exercise: {e}") from e
 
     async def delete_user_exercise(self, input: DeleteUserExerciseInput) -> bool:
         try:
@@ -78,7 +78,7 @@ class DefaultUserExerciseRepository:
                     return True
             return False
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserExerciseRepository while deleting user exercise") from e
+            raise GenericInfraException(f"Error while deleting user exercise: {e}") from e
 
     async def get_user_exercises_by_job_id(self, input: GetUserExerciseByJobIdInput) -> List[UserExerciseDB]:
         try:
@@ -86,7 +86,7 @@ class DefaultUserExerciseRepository:
             items = result.scalars().all()
             return [self._map_to_user_exercise_db(item) for item in items]
         except Exception as e:
-            raise GenericInfraException("An error occurred in UserExerciseRepository while getting user exercises by job id") from e
+            raise GenericInfraException(f"Error while getting user exercises by job id: {e}") from e
 
     def _map_to_user_exercise_db(self, item: UserExerciseModel) -> UserExerciseDB:
         return UserExerciseDB(

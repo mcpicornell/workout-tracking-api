@@ -14,7 +14,7 @@ from datetime import datetime
 
 @pytest.fixture
 async def job_id(db_session):
-    job = JobModel(id=uuid4(), name="Test Job", description="Test Job Description", status=JobStatus.PENDING, job_id=uuid4())
+    job = JobModel(description="Test Job Description", status=JobStatus.PENDING)
     db_session.add(job)
     await db_session.commit()
     return job.id

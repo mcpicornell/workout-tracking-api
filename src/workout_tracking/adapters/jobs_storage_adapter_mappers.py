@@ -35,7 +35,7 @@ def map_infra_job_output_to_domain(infra_output: InfraOutput) -> Job:
         id=infra_output.id,
         description=infra_output.description,
         status=infra_output.status,
-        result=infra_output.result or "",
+        result=infra_output.result,
         created_at=infra_output.created_at,
         updated_at=infra_output.updated_at,
     )

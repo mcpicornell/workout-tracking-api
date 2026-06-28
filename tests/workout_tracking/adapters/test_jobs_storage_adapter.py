@@ -2,7 +2,6 @@ from uuid import uuid4
 
 import pytest
 
-from workout_tracking.adapters.jobs_storage_adapter import JobsStorageAdapter
 from workout_tracking.domain.jobs_use_cases_types import (
     CreateJobPortInput,
     DeleteJobPortInput,
@@ -11,6 +10,8 @@ from workout_tracking.domain.jobs_use_cases_types import (
     UpdateJobPortInput,
 )
 from workout_tracking.infra.repositories.job_repository import DefaultJobRepository
+from workout_tracking.adapters.jobs_storage_adapter import JobsStorageAdapter
+from workout_tracking.domain.domain_exceptions import NotFoundException
 
 
 @pytest.mark.asyncio
@@ -46,11 +47,10 @@ async def test_adapter_get_job_by_id(db_session):
 async def test_adapter_get_job_by_id_not_found(db_session):
     repo = DefaultJobRepository(db_session)
     adapter = JobsStorageAdapter(repo)
-
+    
     input = GetJobByIdPortInput(job_id=uuid4())
-    result = await adapter.get_job_by_id(input)
-
-    assert result is None
+    with pytest.raises(NotFoundException):
+        await adapter.get_job_by_id(input)
 
 
 @pytest.mark.asyncio
@@ -119,8 +119,8 @@ async def test_adapter_delete_job(db_session):
 
     # Verify it's deleted
     get_input = GetJobByIdPortInput(job_id=job_id)
-    fetched = await adapter.get_job_by_id(get_input)
-    assert fetched is None
+    with pytest.raises(NotFoundException):
+        await adapter.get_job_by_id(get_input)
 
 
 @pytest.mark.asyncio

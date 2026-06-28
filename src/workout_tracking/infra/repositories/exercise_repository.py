@@ -51,9 +51,7 @@ class DefaultExerciseRepository:
             self._cache = [self._map_to_exercise_db(ex) for ex in exercises]
             return self._cache
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in ExerciseRepository while getting all exercises"
-            ) from e
+            raise GenericInfraException(f"Error while getting all the exercises: {e}") from e
 
     def invalidate_cache(self):
         self._cache = None
@@ -67,9 +65,7 @@ class DefaultExerciseRepository:
                 return None
             return self._map_to_exercise_db(result)
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in ExerciseRepository while getting exercise by id"
-            ) from e
+            raise GenericInfraException(f"Error while getting exercise by id: {e}") from e
 
     async def create_exercise(self, input: CreateExerciseInput) -> ExerciseCreateOutput:
         try:
@@ -80,9 +76,7 @@ class DefaultExerciseRepository:
             await self.session.refresh(exercise)
             return self._map_to_exercise_db(exercise)
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in ExerciseRepository while creating exercise"
-            ) from e
+            raise GenericInfraException(f"Error while creating exercise: {e}") from e
 
     async def update_exercise(self, input: UpdateExerciseInput) -> ExerciseUpdateOutput:
         try:
@@ -105,9 +99,7 @@ class DefaultExerciseRepository:
             await self.session.refresh(exercise)
             return self._map_to_exercise_db(exercise)
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in ExerciseRepository while updating exercise"
-            ) from e
+            raise GenericInfraException(f"Error while updating exercise: {e}") from e
 
     async def delete_exercise(self, input: DeleteExerciseInput) -> bool:
         try:
@@ -122,9 +114,7 @@ class DefaultExerciseRepository:
                     return True
             return False
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in ExerciseRepository while deleting exercise"
-            ) from e
+            raise GenericInfraException(f"Error while deleting exercise: {e}") from e
 
     async def get_exercises_by_job_id(
         self, input: GetExerciseByJobIdInput
@@ -136,9 +126,7 @@ class DefaultExerciseRepository:
             exercises = result.scalars().all()
             return [self._map_to_exercise_db(ex) for ex in exercises]
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in ExerciseRepository while getting exercises by job id"
-            ) from e
+            raise GenericInfraException(f"Error while getting exercises by job id: {e}") from e
 
     def _map_to_exercise_db(self, exercise: ExerciseModel) -> ExerciseDB:
         return ExerciseDB(

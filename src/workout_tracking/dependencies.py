@@ -1,10 +1,8 @@
 from dataclasses import dataclass
+
+from langgraph.checkpoint.memory import MemorySaver
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langgraph.checkpoint.memory import MemorySaver
-from workout_tracking.infra.agents.workout_agent import DefaultWorkoutAgent, WorkoutAgent
-from workout_tracking.infra.agents.workout_agent_types import LLMSettings
 from workout_tracking.adapters.jobs_storage_adapter import (
     JobsStorageAdapter,
 )
@@ -16,7 +14,14 @@ from workout_tracking.domain.workout_messages_use_cases import (
     DefaultWorkoutMessagesUseCases,
     WorkoutMessagesUseCases,
 )
+from workout_tracking.infra.agents.workout_agent import (
+    DefaultWorkoutAgent,
+    WorkoutAgent,
+)
+from workout_tracking.infra.agents.workout_agent_types import LLMSettings
+from workout_tracking.settings import Settings, get_settings
 
+from .infra.admin.admin_auth import AdminAuth
 from .infra.db.database import AsyncSessionLocal
 from .infra.repositories.exercise_repository import (
     DefaultExerciseRepository,
@@ -37,6 +42,7 @@ class InfraDependencies:
     user_exercise_repository: UserExerciseRepository
     job_repository: JobRepository
     workout_agent: WorkoutAgent
+    authentication_backend: AdminAuth
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,8 +65,8 @@ class Dependencies:
 
 
 class DependenciesBuilder:
-    def build(self, session: AsyncSession) -> Dependencies:
-        infra_dependencies = self._build_infra_dependencies(session)
+    def build(self, session: AsyncSession, settings: Settings) -> Dependencies:
+        infra_dependencies = self._build_infra_dependencies(session, settings)
         adapters_dependencies = self._build_adapters_dependencies(infra_dependencies)
         domain_dependencies = self._build_domain_dependencies(adapters_dependencies)
         return Dependencies(
@@ -69,21 +75,34 @@ class DependenciesBuilder:
             domain_dependencies=domain_dependencies,
         )
 
-    def _build_infra_dependencies(self, session: AsyncSession) -> InfraDependencies:
-        # Note: LLMSettings should ideally come from a config file
-        settings = LLMSettings(name="gemini-pro", api_key="fake_key")
+    def _build_infra_dependencies(
+        self, session: AsyncSession, settings: Settings
+    ) -> InfraDependencies:
+        user_repository = DefaultUserRepository(session)
+        exercise_repository = DefaultExerciseRepository(session)
+        user_exercise_repository = DefaultUserExerciseRepository(session)
+        job_repository = DefaultJobRepository(session)
+
+        llm_settings = LLMSettings(
+            name=settings.DEFAULT_LLM_MODEL, api_key=settings.GEMINI_API_KEY
+        )
         workout_agent = DefaultWorkoutAgent(
-            exercise_repository=DefaultExerciseRepository(session),
-            user_exercise_repository=DefaultUserExerciseRepository(session),
+            exercise_repository=exercise_repository,
+            user_exercise_repository=user_exercise_repository,
             checkpointer=MemorySaver(),
-            settings=settings,
+            settings=llm_settings,
+        )
+        authentication_backend = AdminAuth(
+            secret_key=settings.SECRET_AUTH_KEY,
+            session_factory=AsyncSessionLocal,
         )
         return InfraDependencies(
-            user_repository=DefaultUserRepository(session),
-            exercise_repository=DefaultExerciseRepository(session),
-            user_exercise_repository=DefaultUserExerciseRepository(session),
-            job_repository=DefaultJobRepository(session),
+            user_repository=user_repository,
+            exercise_repository=exercise_repository,
+            user_exercise_repository=user_exercise_repository,
+            job_repository=job_repository,
             workout_agent=workout_agent,
+            authentication_backend=authentication_backend,
         )
 
     def _build_adapters_dependencies(
@@ -113,4 +132,5 @@ class DependenciesBuilder:
 
 async def get_dependencies() -> Dependencies:
     async with AsyncSessionLocal() as session:
-        return DependenciesBuilder().build(session)
+        settings = get_settings()
+        return DependenciesBuilder().build(session, settings)

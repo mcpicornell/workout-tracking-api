@@ -1,3 +1,4 @@
+from workout_tracking.domain.domain_exceptions import NotFoundException
 from workout_tracking.domain.jobs_use_cases_types import (
     CreateJobOutput,
     CreateJobPortInput,
@@ -27,6 +28,8 @@ class JobsStorageAdapter(JobStoragePort):
         output = await self._job_repository.get_job_by_id(
             map_domain_job_to_infra_get_by_id_input(input)
         )
+        if output is None:
+            raise NotFoundException("Job not found")
         return map_infra_job_output_to_domain(output)
 
     async def create_job(self, input: CreateJobPortInput) -> CreateJobOutput:

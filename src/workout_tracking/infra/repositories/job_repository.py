@@ -35,9 +35,7 @@ class DefaultJobRepository:
                 return None
             return self._map_to_job_db(job)
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in JobRepository while getting job by id"
-            ) from e
+            raise GenericInfraException(f"Error while getting job by id: {e}") from e
 
     async def create_job(self, input: CreateJobInput) -> CreateJobOutput:
         try:
@@ -48,9 +46,7 @@ class DefaultJobRepository:
             await self.session.refresh(job)
             return self._map_to_job_db(job)
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in JobRepository while creating job"
-            ) from e
+            raise GenericInfraException(f"Error while creating job: {e}") from e
 
     async def update_job(self, input: UpdateJobInput) -> UpdateJobOutput:
         try:
@@ -73,9 +69,7 @@ class DefaultJobRepository:
             await self.session.refresh(job)
             return self._map_to_job_db(job)
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in JobRepository while updating job"
-            ) from e
+            raise GenericInfraException(f"Error while updating job: {e}") from e
 
     async def delete_job(self, input: DeleteJobInput) -> bool:
         try:
@@ -90,9 +84,7 @@ class DefaultJobRepository:
                     return True
             return False
         except Exception as e:
-            raise GenericInfraException(
-                "An error occurred in JobRepository while deleting job"
-            ) from e
+            raise GenericInfraException(f"Error while deleting job: {e}") from e
 
     def _map_to_job_db(self, job: JobModel) -> JobDB:
         return JobDB(
