@@ -2,40 +2,44 @@ from dataclasses import dataclass
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
+from ..db.models import JobStatus
 
 @dataclass(frozen=True, slots=True)
-class CreateExerciseInput:
+class CreateJobInput:
     name: str
     job_id: UUID
     description: Optional[str] = None
+    status: JobStatus = JobStatus.PENDING
 
 @dataclass(frozen=True, slots=True)
-class UpdateExerciseInput:
+class UpdateJobInput:
     id: UUID
     name: Optional[str] = None
     description: Optional[str] = None
+    status: Optional[JobStatus] = None
     job_id: Optional[UUID] = None
 
 @dataclass(frozen=True, slots=True)
-class GetExerciseByIdInput:
+class GetJobByIdInput:
     id: UUID
 
 @dataclass(frozen=True, slots=True)
-class GetExerciseByJobIdInput:
-    job_id: UUID
-
-@dataclass(frozen=True, slots=True)
-class DeleteExerciseInput:
+class GetJobByJobIdInput:
     id: UUID
 
 @dataclass(frozen=True, slots=True)
-class ExerciseDB:
+class DeleteJobInput:
+    id: UUID
+
+@dataclass(frozen=True, slots=True)
+class JobDB:
     id: UUID
     name: str
     description: Optional[str]
+    status: JobStatus
     created_at: datetime
     updated_at: datetime
     job_id: UUID
 
-ExerciseCreateOutput = ExerciseDB
-ExerciseUpdateOutput = Optional[ExerciseDB]
+JobCreateOutput = JobDB
+JobUpdateOutput = Optional[JobDB]

@@ -1,5 +1,11 @@
 from sqladmin import ModelView
-from .infra.db.models import ExerciseModel, UserModel, UserExerciseModel
+from .infra.db.models import ExerciseModel, UserModel, UserExerciseModel, JobModel
+from .settings import get_settings
+
+class JobAdmin(ModelView, model=JobModel):
+    name = "Job"
+    plural = "Jobs"
+    column_list = [JobModel.id, JobModel.name, JobModel.status]
 
 class UserAdmin(ModelView, model=UserModel):
     name = "User"
@@ -20,3 +26,12 @@ class UserExerciseAdmin(ModelView, model=UserExerciseModel):
         "exercise", 
         "date"
     ]
+
+ADMIN_VIEWS = (
+    JobAdmin,
+    UserAdmin,
+    ExerciseAdmin,
+    UserExerciseAdmin,
+)
+
+authentication_backend = AdminAuth(secret_key=get_settings().SECRET_AUTH_KEY)

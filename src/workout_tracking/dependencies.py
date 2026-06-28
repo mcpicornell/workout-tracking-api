@@ -1,14 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from .infra.db.database import AsyncSessionLocal
-from .infra.repositories.user_repository import UserRepository
-from .infra.repositories.exercise_repository import ExerciseRepository
-from .infra.repositories.user_exercise_repository import UserExerciseRepository
+from .infra.repositories.user_repository import UserRepository, DefaultUserRepository
+from .infra.repositories.exercise_repository import ExerciseRepository, DefaultExerciseRepository
+from .infra.repositories.user_exercise_repository import UserExerciseRepository, DefaultUserExerciseRepository
+from .infra.repositories.job_repository import JobRepository, DefaultJobRepository
 
 class InfraDependencies:
     def __init__(self, session: AsyncSession):
-        self.user_repository = UserRepository(session)
-        self.exercise_repository = ExerciseRepository(session)
-        self.user_exercise_repository = UserExerciseRepository(session)
+        self.user_repository: UserRepository = DefaultUserRepository(session)
+        self.exercise_repository: ExerciseRepository = DefaultExerciseRepository(session)
+        self.user_exercise_repository: UserExerciseRepository = DefaultUserExerciseRepository(session)
+        self.job_repository: JobRepository = DefaultJobRepository(session)
 
 class AdaptersDependencies:
     def __init__(self, infra: InfraDependencies):

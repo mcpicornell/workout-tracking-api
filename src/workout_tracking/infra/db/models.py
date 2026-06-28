@@ -1,6 +1,7 @@
 import uuid
-from datetime import datetime, date, timezone
-from sqlalchemy import Column, String, DateTime, Date, Integer, ForeignKey, Boolean
+from datetime import datetime, timezone
+from enum import StrEnum
+from sqlalchemy import Column, String, DateTime, Date, Integer, ForeignKey, Boolean, Enum as SQLEnum
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.orm import relationship
 from .database import Base
@@ -16,6 +17,28 @@ class GUID(TypeDecorator):
     def process_result_value(self, value, _):
         return uuid.UUID(value) if value else None
 
+class JobStatus(StrEnum):
+    PENDING = "PENDING"
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+
+
+class JobModel(Base):
+    __tablename__ = "jobs"
+
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    description = Column(String)
+    status = Column(
+        SQLEnum(JobStatus),
+        default=JobStatus.PENDING,
+        nullable=False,
+    )    
+    created_at = Column(DateTime, default=get_now_utc)
+    updated_at = Column(DateTime, default=get_now_utc, onupdate=get_now_utc)
+    job_id = Column(GUID, ForeignKey("jobs.id"), nullable=False)
+
+
 class UserModel(Base):
     __tablename__ = "users"
 
@@ -25,7 +48,9 @@ class UserModel(Base):
     is_active = Column(Boolean, default=True, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=get_now_utc)
-    
+    updated_at = Column(DateTime, default=get_now_utc, onupdate=get_now_utc)
+    job_id = Column(GUID, ForeignKey("jobs.id"), nullable=True)
+
     user_exercises = relationship("UserExerciseModel", back_populates="user")
 
 class ExerciseModel(Base):
@@ -36,6 +61,7 @@ class ExerciseModel(Base):
     description = Column(String)
     created_at = Column(DateTime, default=get_now_utc)
     updated_at = Column(DateTime, default=get_now_utc, onupdate=get_now_utc)
+    job_id = Column(GUID, ForeignKey("jobs.id"), nullable=False)
 
     user_exercises = relationship("UserExerciseModel", back_populates="exercise")
 
@@ -51,6 +77,7 @@ class UserExerciseModel(Base):
     date = Column(Date, nullable=False)
     created_at = Column(DateTime, default=get_now_utc)
     updated_at = Column(DateTime, default=get_now_utc, onupdate=get_now_utc)
+    job_id = Column(GUID, ForeignKey("jobs.id"), nullable=False)
 
     exercise = relationship("ExerciseModel", back_populates="user_exercises")
     user = relationship("UserModel", back_populates="user_exercises")

@@ -1,0 +1,4 @@
+
+
+class GenericInfraException(Exception):
+    pass
